@@ -9,11 +9,9 @@ app.use(morgan("dev"));
 
 // PHASE 2
 app.use(express.json());
+app.use('/', indexRouter);
+app.use('/tweets', tweetsRouter);
 
-
-app.get("/", (req, res) => {
-  res.send("Welcome to the express-sequelize-starter!");
-});
 
 // Catch unhandled requests and forward to error handler.
 app.use((req, res, next) => {
