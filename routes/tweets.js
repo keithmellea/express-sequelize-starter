@@ -1,8 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const db = require('../db/models');
+const { Tweet } = db;
 
-router.get("/", (req, res) => {
-  res.json({ message: "test tweets index" });
-});
+const asyncHandler = (handler) => (req, res, next) => handler(req, res, next).catch(next);
+
+router.get("/", asyncHandler( async (req, res) => {
+    const tweets = await Tweet.findAll();
+    res.json({ tweets });
+}));
 
 module.exports = router;
