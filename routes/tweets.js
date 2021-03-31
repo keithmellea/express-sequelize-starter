@@ -46,7 +46,7 @@ const tweetNotFoundError = (id) => {
 // GET /tweets/2
 router.get("/:id(\\d+)", asyncHandler( async (req, res, next) => {
     const tweetId = parseInt(req.params.id);
-    const tweet = await Tweet.findByPk(parseInt(tweetId));
+    const tweet = await Tweet.findByPk(tweetId);
     if (!tweet) {
         next(tweetNotFoundError(tweetId));
     } else {
@@ -54,11 +54,38 @@ router.get("/:id(\\d+)", asyncHandler( async (req, res, next) => {
     };
 }));
 
+// POST /tweets -- creating new tweets
 router.post("/", validateTweet, handleValidationErrors, asyncHandler( async (req, res) => {
     const { message } = req.body;
     const newTweet = await Tweet.create( { message });
     res.status(201).json( { newTweet });
+}));
 
-}))
+// PUT /tweets to update
+router.put("/:id(\\d+)", validateTweet, handleValidationErrors, asyncHandler(async (req, res, next) => {
+    const tweetId = parseInt(req.params.id);
+    const tweet = await Tweet.findByPk(tweetId);
+
+    if (tweet) {
+        await tweet.update({ message: req.body.message });
+        res.json({ tweet });
+    } else {
+        next(tweetNotFoundError(tweetId))
+    }
+}));
+
+// DELETE tweet
+router.delete("/:id(\\d+)", asyncHandler(async (req, res, next) => {
+    const tweetId = parseInt(req.params.id);
+    const tweet = await Tweet.findByPk(tweetId);
+
+    if (tweet) {
+        await tweet.destroy();
+        res.status(204).end();
+    } else {
+        next(tweetNotFoundError(tweetId));
+    }
+}));
+
 
 module.exports = router;
