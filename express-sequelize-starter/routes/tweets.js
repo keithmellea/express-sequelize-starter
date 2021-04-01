@@ -4,7 +4,8 @@ const db = require('../db/models');
 const { Tweet } = db;
 const { check } = require("express-validator");
 const { asyncHandler, handleValidationErrors } = require("../utils");
- 
+const { requireAuth } = require("../auth");
+
 const validateTweet = [
     check('message')
     .exists({ checkFalsy: true })
@@ -12,6 +13,9 @@ const validateTweet = [
     .isLength( { max: 280 })
     .withMessage('Tweet can\'t be longer than 280 characters')
 ];
+
+// to authenticate the user
+router.use(requireAuth);
 
 // GET /tweets
 router.get("/", asyncHandler( async (req, res) => {
